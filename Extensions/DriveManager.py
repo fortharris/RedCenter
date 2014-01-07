@@ -1,10 +1,12 @@
 from PyQt4 import QtCore
 import os
 from ctypes import *
-import win32api, win32con, win32gui
+import win32api
+import win32con
+import win32gui
 
-##################################### Drive Manager ###################################
-        
+# Drive Manager ###################################
+
 #
 # Device change events (WM_DEVICECHANGE wParam)
 #
@@ -34,56 +36,63 @@ DBTF_NET = 0x0002
 WORD = c_ushort
 DWORD = c_ulong
 
+
 class DEV_BROADCAST_HDR (Structure):
     _fields_ = [
-    ("dbch_size", DWORD),
-    ("dbch_devicetype", DWORD),
-    ("dbch_reserved", DWORD)
-    ]
+        ("dbch_size", DWORD),
+        ("dbch_devicetype", DWORD),
+        ("dbch_reserved", DWORD)
+        ]
+
 
 class DEV_BROADCAST_VOLUME (Structure):
     _fields_ = [
-    ("dbcv_size", DWORD),
-    ("dbcv_devicetype", DWORD),
-    ("dbcv_reserved", DWORD),
-    ("dbcv_unitmask", DWORD),
-    ("dbcv_flags", WORD)
-    ]
+        ("dbcv_size", DWORD),
+        ("dbcv_devicetype", DWORD),
+        ("dbcv_reserved", DWORD),
+        ("dbcv_unitmask", DWORD),
+        ("dbcv_flags", WORD)
+        ]
 
-def drive_from_mask (mask):
+
+def drive_from_mask(mask):
     n_drive = 0
     while 1:
-        if (mask & (2 ** n_drive)): return n_drive
-        else: n_drive += 1
+        if (mask & (2 ** n_drive)):
+            return n_drive
+        else:
+            n_drive += 1
+
 
 class Notification():
+
     def __init__(self, parent):
         self.parent = parent
-        
+
         message_map = {
-          win32con.WM_DEVICECHANGE : self.onDeviceChange
+            win32con.WM_DEVICECHANGE: self.onDeviceChange
         }
 
-        wc = win32gui.WNDCLASS ()
-        hinst = wc.hInstance = win32api.GetModuleHandle (None)
+        wc = win32gui.WNDCLASS()
+        hinst = wc.hInstance = win32api.GetModuleHandle(None)
         wc.lpszClassName = "DeviceChangeDemo"
-        wc.style = win32con.CS_VREDRAW | win32con.CS_HREDRAW;
-        wc.hCursor = win32gui.LoadCursor (0, win32con.IDC_ARROW)
+        wc.style = win32con.CS_VREDRAW | win32con.CS_HREDRAW
+        wc.hCursor = win32gui.LoadCursor(0, win32con.IDC_ARROW)
         wc.hbrBackground = win32con.COLOR_WINDOW
         wc.lpfnWndProc = message_map
-        classAtom = win32gui.RegisterClass (wc)
+        classAtom = win32gui.RegisterClass(wc)
         style = win32con.WS_OVERLAPPED | win32con.WS_SYSMENU
-        self.hwnd = win32gui.CreateWindow (
-          classAtom,
-          "Device Change Demo",
-          style,
-          0, 0,
-          win32con.CW_USEDEFAULT, win32con.CW_USEDEFAULT,
-          0, 0,
-          hinst, None
-        )
+        self.hwnd = win32gui.CreateWindow(
+            classAtom,
+                                         "Device Change Demo",
+                                         style,
+                                         0, 0,
+                                         win32con.CW_USEDEFAULT, win32con.CW_USEDEFAULT,
+                                         0, 0,
+                                         hinst, None
+            )
 
-    def onDeviceChange (self, hwnd, msg, wparam, lparam):
+    def onDeviceChange(self, hwnd, msg, wparam, lparam):
         #
         # WM_DEVICECHANGE:
         #  wParam - type of change: arrival, removal etc.
@@ -91,29 +100,32 @@ class Notification():
         #    if it's a volume then...
         #  lParam - what's changed more exactly
         #
-        dev_broadcast_hdr = DEV_BROADCAST_HDR.from_address (lparam)
+        dev_broadcast_hdr = DEV_BROADCAST_HDR.from_address(lparam)
 
         if wparam == DBT_DEVICEARRIVAL:
             if dev_broadcast_hdr.dbch_devicetype == DBT_DEVTYP_VOLUME:
-                dev_broadcast_volume = DEV_BROADCAST_VOLUME.from_address (lparam)
-                drive_letter = drive_from_mask (dev_broadcast_volume.dbcv_unitmask)
-                drivePath = (chr (ord ("A") + drive_letter) + ":\\")
-                
+                dev_broadcast_volume = DEV_BROADCAST_VOLUME.from_address(
+                    lparam)
+                drive_letter = drive_from_mask(
+                    dev_broadcast_volume.dbcv_unitmask)
+                drivePath = (chr(ord("A") + drive_letter) + ":\\")
+
                 # lock autorun file
                 try:
                     os.remove(os.path.join(drivePath, "autorun.inf"))
                 except:
                     pass
                 self.parent.newDrive.emit(drivePath)
-                
+
         elif wparam == DBT_DEVICEREMOVECOMPLETE:
             self.parent.newDrive.emit('')
         return 1
 
+
 class DriveManager(QtCore.QThread):
-    
+
     newDrive = QtCore.pyqtSignal(str)
-    
+
     def run(self):
         w = Notification(self)
         win32gui.PumpMessages()

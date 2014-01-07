@@ -1,9 +1,11 @@
 from PyQt4 import QtGui
 
+
 class AboutLabel(QtGui.QLabel):
+
     def __init__(self, parent=None):
         QtGui.QLabel.__init__(self, parent)
-                
+
         self.setStyleSheet("color: white; border-radius: 5px;")
         self.setMargin(20)
         self.setWordWrap(True)
@@ -16,4 +18,4 @@ class AboutLabel(QtGui.QLabel):
                     "<p>Author: Amoatey Harrison"
                     "<p>Author Email: fortharris@gmail.com"
                     "<p>Developed with Python using the PyQt interface."
-                    )
+                     )

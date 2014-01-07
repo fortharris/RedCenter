@@ -1,23 +1,25 @@
 from PyQt4 import QtCore, QtGui
-        
+
+
 class FrameLabel(QtGui.QLabel):
+
     def __init__(self, parent):
         QtGui.QLabel.__init__(self, parent)
-        
+
         self.setGeometry(0, 0, 496, 25)
-        
+
         nameLabel = QtGui.QLabel("RedCenter - Standard Edition", self)
         nameLabel.setStyleSheet("color: white;")
         nameLabel.setGeometry(5, 0, 300, 25)
-        
+
         self._parent = parent
-        
+
         minimizeButton = QtGui.QPushButton(self)
         minimizeButton.setToolTip("Minimize")
         minimizeButton.setGeometry(431, 0, 30, 17)
         minimizeButton.setIcon(QtGui.QIcon("Icons\\minimize"))
         minimizeButton.clicked.connect(self._parent.showMinimized)
-        
+
         minimizeButton.setStyleSheet(""" QPushButton {
                         width: 75;
                         height: 25;
@@ -37,13 +39,13 @@ class FrameLabel(QtGui.QLabel):
                         padding-top: 2px;
                         }
             """)
-        
+
         closeButton = QtGui.QPushButton(self)
         closeButton.setToolTip("Close")
         closeButton.setGeometry(461, 0, 30, 17)
         closeButton.setIcon(QtGui.QIcon("Icons\\tray"))
         closeButton.clicked.connect(self._parent.close)
-        
+
         closeButton.setStyleSheet(""" QPushButton {
                         width: 75;
                         height: 25;
@@ -62,10 +64,12 @@ class FrameLabel(QtGui.QLabel):
                         padding-top: 2px;
                         }
             """)
-        
+
     def mousePressEvent(self, event):
         if event.button() == QtCore.Qt.LeftButton:
-            self.dragPosition = event.globalPos() - self._parent.frameGeometry().topLeft()
+            self.dragPosition = event.globalPos() - \
+                                                self._parent.frameGeometry(
+                                                ).topLeft()
             event.accept()
         else:
             event.ignore()
