@@ -298,6 +298,7 @@ class RedCenter(QtGui.QMainWindow):
 
     def closeEvent(self, event):
         self.hide()
+        self.fileManager.loadDirectory("c:\\")
         if self.SETTINGS['NotificationClicked'] == "False":
             self.trayIcon.showMessage("RedCenter - Standard Edition",
                                      "Program is still running in the background. Disable this notification by clicking on this balloon.", 1)
@@ -596,7 +597,6 @@ app.setStyleSheet(style)
 
 main = RedCenter()
 main.loadDirectory(main.fileManager.rootPath)
-main.show()
 
 driveDetect = DriveManager()
 driveDetect.newDrive.connect(main.fileManager.storage_media_handler)
