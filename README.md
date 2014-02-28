@@ -11,3 +11,6 @@ Windows viruses have a way of staying hidden even when the show hidden files set
 1. PyCrypto http://www.voidspace.org.uk/python/modules.shtml
 1. Python 3x http://www.python.org/
 1. PyQt4 http://www.riverbankcomputing.co.uk/software/pyqt/intro
+
+### Screenshot
+![Alt text](/docs/screens/screen.png "1")
