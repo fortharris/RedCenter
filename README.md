@@ -13,4 +13,4 @@ Windows viruses have a way of staying hidden even when the show hidden files set
 1. PyQt4 http://www.riverbankcomputing.co.uk/software/pyqt/intro
 
 ### Screenshot
-![Alt text](/docs/screens/screen.png "1")
+![Alt text](/doc/screens/screen.png "1")
